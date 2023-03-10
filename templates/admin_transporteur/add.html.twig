@@ -1,0 +1,83 @@
+{% extends 'baseadmin.html.twig' %}
+
+{% block title %}Hello AdminProductController!{% endblock %}
+
+{% block body %}
+ <div class="page-content">
+                <div class="container-fluid">
+
+                    <!-- start page title -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                                <h4 class="mb-sm-0">Ajouter Transporteur</h4>
+
+                                <div class="page-title-right">
+                                    <ol class="breadcrumb m-0">
+                                        <li class="breadcrumb-item"><a href="javascript: void(0);">Ecommerce</a></li>
+                                        <li class="breadcrumb-item active">Ajouter Transporteur</li>
+                                    </ol>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end page title -->
+                  {{form_start(form)}}
+                    <div id="createproduct-form" autocomplete="off" class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="product-title-input">Nom du transporteur</label>
+                                           
+                                           {{form_row(form.nom)}}
+                                            <div class="invalid-feedback">Please Enter a product title.</div>
+                                        </div>
+
+                                         <div class="mb-3">
+                                            <label class="form-label" for="product-title-input">Prix du transporteur</label>
+                                           
+                                           {{form_row(form.price)}}
+                                            <div class="invalid-feedback">Please Enter a product title.</div>
+                                        </div>
+
+                                         <div class="mb-3">
+                                            <label class="form-label" for="product-title-input">Description</label>
+                                           
+                                           {{form_row(form.description)}}
+                                            <div class="invalid-feedback">Please Enter a product title.</div>
+                                        </div>
+
+                                       
+
+                                     
+
+                                           
+                                            
+
+                                     
+                                            </div>
+                                            <!-- end tab pane -->
+                                        </div>
+                                        <!-- end tab content -->
+                                    </div>
+                                    <!-- end card body -->
+                                </div>
+                                <!-- end card -->
+                                <div class="text-end mb-3">
+                                    <button type="submit" class="btn btn-success w-sm">Ajouter</button>
+                                </div>
+                            </div>
+                   
+                        </div>
+                        <!-- end row -->
+
+                    </div>
+                     {{form_end(form)}}
+                </div>
+                <!-- container-fluid -->
+            </div>
+            <!-- End Page-content -->
+{% endblock %}

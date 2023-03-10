@@ -1,0 +1,293 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}payee!{% endblock %}
+
+{% block body %}
+
+<div class="page-title-overlap bg-dark pt-4">
+        <div class="container d-lg-flex justify-content-between py-2 py-lg-3">
+          <div class="order-lg-2 mb-3 mb-lg-0 pt-lg-2">
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb breadcrumb-light flex-lg-nowrap justify-content-center justify-content-lg-start">
+                <li class="breadcrumb-item"><a class="text-nowrap" href="index.html"><i class="ci-home"></i>Home</a></li>
+                <li class="breadcrumb-item text-nowrap"><a href="shop-grid-ls.html">Shop</a>
+                </li>
+                <li class="breadcrumb-item text-nowrap active" aria-current="page">Checkout</li>
+              </ol>
+            </nav>
+          </div>
+          <div class="order-lg-1 pe-lg-4 text-center text-lg-start">
+            <h1 class="h3 text-light mb-0">Checkout</h1>
+          </div>
+        </div>
+      </div>
+      <div class="container pb-5 mb-2 mb-md-4">
+        <div class="row">
+          <section class="col-lg-8">
+            <!-- Steps-->
+            <div class="steps steps-light pt-2 pb-3 mb-5"><a class="step-item active" href="shop-cart.html">
+                <div class="step-progress"><span class="step-count">1</span></div>
+                <div class="step-label"><i class="ci-cart"></i>Panier</div></a><a class="step-item active" href="checkout-details.html">
+                <div class="step-progress"><span class="step-count">2</span></div>
+                 <div class="step-label"><i class="ci-package"></i>Livraison</div></a><a class="step-item active" href="checkout-payment.html">          
+                <div class="step-progress"><span class="step-count">3</span></div>
+                <div class="step-label"><i class="ci-check-circle"></i>Vérifiez</div></a><a class="step-item " href="checkout-shipping.html">
+                <div class="step-progress"><span class="step-count">4</span></div>
+                <div class="step-label"><i class="ci-card"></i>Paiement</div></a><a class="step-item" href="checkout-review.html">
+                
+                </a></div>
+            <!-- Order details-->
+            <h2 class="h6 pt-1 pb-3 mb-3 border-bottom">Vérifiez votre commande</h2>
+
+                <!-- Client details-->
+            <div class="bg-secondary rounded-3 px-4 pt-4 pb-2">
+              <div class="row">
+                <div class="col-sm-6">
+                  <h4 class="h6">Expédition à:</h4>
+                  <ul class="list-unstyled fs-sm">
+                    <li><span class="text-muted">Client:&nbsp;</span>{{app.user.nom}} {{app.user.prenom}}</li>
+                    <li><span class="text-muted">Addresse:&nbsp;</span>{{address}}</li>
+                    <li><span class="text-muted">Téléphone:&nbsp;</span>+(216) {{phone}}</li>
+                     <li><span class="text-muted">Transporteur:&nbsp;</span>{{transporteur.nom}}<br>
+                      {{transporteur.description}}<br> Prix ​​de livraison: <div class="badge bg-warning">{{(transporteur.price) / 1000}} DT</div> 
+                     </li>
+                  </ul>
+                </div>
+                <div class="col-sm-6">
+                  <h4 class="h6">reference du Commande :</h4>
+                  <ul class="list-unstyled fs-sm">
+                    <li><span class="text-muted">N°:&nbsp;</span>{{reference}}</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+           
+           {% set total = 0 %} 
+            {% for p in panier %}
+            <div class="d-sm-flex justify-content-between my-4 pb-3 border-bottom">
+              <div class="d-sm-flex text-center text-sm-start"><a class="d-inline-block flex-shrink-0 mx-auto me-sm-4" href="shop-single-v1.html">
+              
+               {% for i in p.product.images |slice(0,1) %}
+                    <img src="/uploads/{{i.nom}}" width="64" alt="Product"></a>
+                    {% endfor %}
+              
+              </a>
+                <div class="pt-2">
+                  <h3 class="product-title fs-base mb-2"><a href="shop-single-v1.html">{{p.product.name}}</a></h3>
+                  <div class="fs-sm"><span class="text-muted me-2">Size:</span>8.5</div>
+                  <div class="fs-sm"><span class="text-muted me-2">Color:</span>White &amp; Blue</div>
+                  <div class="fs-lg text-accent pt-2">{{p.product.price}} DT</div>
+                </div>
+              </div>
+              <div class="pt-2 pt-sm-0 ps-sm-3 mx-auto mx-sm-0 text-center text-sm-end" style="max-width: 9rem;">
+                <p class="mb-0"><span class="text-muted fs-sm">Quantity:</span><span>&nbsp;{{p.quantity}}</span></p>
+               
+              </div>
+            </div>
+              {% set total = total +(p.product.price * p.quantity) %}
+             {% endfor %}
+        <script src="https://www.paypal.com/sdk/js?client-id=AbpMCON0s9Vq7RGkw7y4Np1HJBEEB2dI4gux6_wsIS7MsU82T2NmD_Van1Gks-ALW1vkft2IB5viJEUL&currency=USD"></script>
+<script>
+  // wait for on load event to ensure the JS SDK is loaded
+  window.addEventListener('load', (event) => {
+    var options = {
+      createOrder: function(data, actions) {
+        // This function sets up the details of the transaction, including the amount and line item details. 
+        return actions.order.create({
+          purchase_units: [{
+            amount: {
+              value: '{{total + ((transporteur.price) / 1000) }}'
+            }
+          }]
+        });
+      },
+     onApprove: (data, actions) => {
+          return actions.order.capture().then(function(orderData) {
+            // Successful capture! For dev/demo purposes:
+            console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
+            const transaction = orderData.purchase_units[0].payments.captures[0];
+            alert(`Transaction ${transaction.status}: ${transaction.id}\n\nSee console for all available details`);
+            
+            window.location.href = "/verify_payment/{{order.reference}}/"+transaction.id
+            
+        })
+      }
+    };
+    // This function displays Smart Payment Buttons on your web page. 
+    window.paypal.Buttons(options).render('#paypal-button-container');
+  });
+</script>
+          
+          
+          </section>
+          <!-- Sidebar-->
+          <aside class="col-lg-4 pt-4 pt-lg-0 ps-xl-5">
+            <div class="bg-white rounded-3 shadow-lg p-4 ms-lg-auto">
+              <div class="py-2 px-xl-2">
+                <h2 class="h6 text-center mb-4">Order summary</h2>
+                <ul class="list-unstyled fs-sm pb-2 border-bottom">
+                  <li class="d-flex justify-content-between align-items-center"><span class="me-2">Total:</span><span class="text-end">{{total}} DT</span></li>
+                  <li class="d-flex justify-content-between align-items-center"><span class="me-2">Livraison:</span><span class="text-end">{{(transporteur.price) / 1000}} DT</span></li>
+                
+                 
+                </ul>
+                <h3 class="fw-normal text-center my-4">{{total + ((transporteur.price) / 1000) }}.<small>00</small> DT</h3>
+                <div class="needs-validation" method="post" novalidate>
+                   <div>
+                   {# <div class="form-check form-check-inline">
+                 <input type="radio" name="colorRadio" class="form-check-input" value="paypal">
+                  <label class="form-check-label" for="ex-radio-4">Paypal</label>
+                  
+                  </div>
+                  <div class="form-check form-check-inline">
+                 <input type="radio" name="colorRadio" class="form-check-input" value="stripe">
+                   <label class="form-check-label" for="ex-radio-4">stripe</label></div>
+                   <div class="form-check form-check-inline">
+                 <input type="radio" name="colorRadio" class="form-check-input" value="livraison">
+                  <label class="form-check-label" for="ex-radio-4">à domicile</label>
+                  </div>
+                </div> #}
+                <div class="gg mb-5">
+
+                 <div class="accordion pt-4 mb-grid-gutter" id="payment-methods">
+                  {#  paypal #}
+                  <div class="accordion-item bg-white shadow">
+                    <h2 class="accordion-header" id="heading-1">
+                      <button class="accordion-button no-indicator" type="button">
+                        <div class="form-check w-100" data-bs-toggle="collapse" data-bs-target="#paypal" aria-expanded="false" aria-controls="paypal">
+
+                          <label class="form-check-label d-flex align-items-center fs-base text-heading mb-0 mt-1" for="paypal-radio"><span>PayPal</span>
+                          <img class="ms-3" src="https://upload.wikimedia.org/wikipedia/commons/a/a4/Paypal_2014_logo.png" alt="PayPal" width="50"></label>
+                        </div>
+                      </button>
+                    </h2>
+                    <div class="accordion-collapse collapse" id="paypal" aria-labelledby="heading-2" data-bs-parent="#payment-methods">
+                    <div class="accordion-body"> <div id="paypal-button-container"></div>
+                          <div class="paypal box mt-3">
+                        
+                           {#  <button class="btn btn-success d-block w-100" type="submit">Payer avec paypal 
+                             
+                             | {{total + ((transporteur.price) / 1000) }}.<small>00</small> DT</button> #}
+                            </div>  </div>
+                    </div>
+                  </div>
+                 {#  stripe #}
+                  <div class="accordion-item bg-white shadow">
+                    <h2 class="accordion-header" id="heading-2">
+                      <button class="accordion-button no-indicator" type="button">
+                        <div class="form-check w-100" data-bs-toggle="collapse" data-bs-target="#stripe" aria-expanded="false" aria-controls="stripe" value="stripe">
+                         
+                          <label class="form-check-label d-flex align-items-center fs-base text-heading mb-0 mt-1" for="stripe-radio"><span>Stripe</span>
+                          <img class="ms-3" src="https://upload.wikimedia.org/wikipedia/en/thumb/e/eb/Stripe_logo%2C_revised_2016.png/1200px-Stripe_logo%2C_revised_2016.png" alt="PayPal" width="50"></label>
+                        </div>
+                      </button>
+                    </h2>
+                    <div class="accordion-collapse collapse" id="stripe" aria-labelledby="heading-2" data-bs-parent="#payment-methods">
+                      <div class="accordion-body">
+                        <div class="stripe box mt-3">
+                            <a class="btn btn-success d-block w-100" id="checkout-button">Payer avec stripe | {{total + ((transporteur.price) / 1000) }}.<small>00</small> DT</a>
+                            </div>
+                      </div>
+                    </div>
+                  </div>
+                 {#  domicile #}
+                  <div class="accordion-item bg-white shadow">
+                    <h2 class="accordion-header" id="heading-3">
+                      <button class="accordion-button no-indicator collapsed" type="button">
+                        <div class="form-check w-100" data-bs-toggle="collapse" data-bs-target="#cash" aria-expanded="false" aria-controls="cash">
+                         
+                          <label class="form-check-label d-flex align-items-center fs-base text-heading mb-0 mt-1" for="cash-radio">Paiement à la livraison</label>
+                        </div>
+                      </button>
+                    </h2>
+                    <div class="accordion-collapse collapse" id="cash" aria-labelledby="heading-3" data-bs-parent="#payment-methods">
+                      <div class="accordion-body">
+                         <div class="livraison box mt-3">
+                            <a class="btn btn-success d-block w-100" href="{{path('order_domicile',{'id':order.id})}}">Paiement à la livraison | {{total + ((transporteur.price) / 1000) }}.<small>00</small> DT</a>
+                            </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+       
+ 
+  
+
+              
+ {% block javascript %}
+<script src="https://js.stripe.com/v3/"></script>
+   <!-- Replace "test" with your own sandbox Business account app client ID -->
+  
+{% endblock %}                  
+                            
+                           
+                            </div>
+{#
+                            <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script>
+ $(document).ready(function(){
+ $(".gg").hide();
+}); 
+
+$(document).ready(function(){
+    
+    $('input[type="radio"]').click(function(){
+        var inputValue = $(this).attr("value");
+        var targetBox = $("." + inputValue);
+        $(".box").not(targetBox).hide();
+        $(targetBox).show();
+    });
+});
+</script> #}
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
+        <!-- Navigation (mobile)-->
+        <div class="row d-lg-none">
+          <div class="col-lg-8">
+            <div class="d-flex pt-4 mt-3">
+              <div class="w-50 pe-3"><a class="btn btn-secondary d-block w-100" href="checkout-payment.html"><i class="ci-arrow-left mt-sm-0 me-1"></i><span class="d-none d-sm-inline">Back to Payment</span><span class="d-inline d-sm-none">Back</span></a></div>
+              <div class="w-50 ps-2"><a class="btn btn-primary d-block w-100" href="checkout-complete.html"><span class="d-none d-sm-inline">Complete order</span><span class="d-inline d-sm-none">Complete</span><i class="ci-arrow-right mt-sm-0 ms-1"></i></a></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+var stripe = Stripe("pk_test_51LC0eQFiDr85NP9qiBiDwtSWFIhO5oXqPoAGc0JeBG0vlp9HUJqACHwnSsyzSJnJkJXNdVvQV8yIFOkOdy422tYf00rBG3qLa4");
+var checkoutButton = document.getElementById("checkout-button");
+checkoutButton.addEventListener("click",function() {
+  fetch("/order/create-session/{{ reference }}",{
+    method:"POST",
+  })
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function(session){
+
+      if (session.error == 'order'){
+
+        window.location.replace('{{ path('order') }}');
+      }else {
+        return stripe.redirectToCheckout({sessionId: session.id});
+      }
+      
+    })
+    .then(function (result){
+      // bla bla
+      if (result.error){
+        alert(result.error.message);
+      }
+    })
+    .catch(function(error){
+      console.error("Error:",error);
+    });
+});
+</script>
+{% endblock %}
+

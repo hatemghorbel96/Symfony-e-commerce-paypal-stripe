@@ -1,0 +1,384 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello ProductController!{% endblock %}
+
+{% block body %}
+
+      <!-- Page Title-->
+      <div class="page-title-overlap bg-dark pt-4">
+         {% for label,messages in app.flashes %}
+                                    <div class="container mb-3 text-center">
+                                        <div class="alertt alert alert-{{ label }} rounded mb-3">
+                                            {% for message in messages %}
+                                                <p>{{ message }}</p>
+                                            {% endfor %}
+                                        </div>
+
+                                    </div>
+                                {% endfor %}
+
+                                
+        <div class="container d-lg-flex justify-content-between py-2 py-lg-3">
+          <div class="order-lg-2 mb-3 mb-lg-0 pt-lg-2">
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb breadcrumb-light flex-lg-nowrap justify-content-center justify-content-lg-start">
+                <li class="breadcrumb-item"><a class="text-nowrap" href="index.html"><i class="ci-home"></i>Home</a></li>
+                <li class="breadcrumb-item text-nowrap"><a href="#">Shop</a>
+                </li>
+                <li class="breadcrumb-item text-nowrap active" aria-current="page">Product Page v.1</li>
+              </ol>
+            </nav>
+          </div>
+          <div class="order-lg-1 pe-lg-4 text-center text-lg-start">
+            <h1 class="h3 text-light mb-0">{{product.name}}</h1>
+          </div>
+        </div>
+      </div>
+      <div class="container">
+        <!-- Gallery + details-->
+        <div class="bg-light shadow-lg rounded-3 px-4 py-3 mb-5">
+          <div class="px-lg-3">
+            <div class="row">
+              <!-- Product gallery-->
+              <div class="col-lg-7 pe-lg-0 pt-lg-4">
+                <div class="product-gallery">
+                  <div class="product-gallery-preview order-sm-2">
+                  {% for key,i in product.images  %}
+                    <div class="product-gallery-preview-item {% if key == 0 %} active {% endif %}" id="{{i.id}}">
+                    <img class="image-zoom" src="/uploads/{{i.nom}}" data-zoom="/uploads/{{i.nom}}" alt="{{i.nom}}">
+                      <div class="image-zoom-pane"></div>
+                    </div>
+                  {% endfor %}
+                  </div>
+                  <div class="product-gallery-thumblist order-sm-1">
+                   {% for key,i in product.images  %}
+                  <a class="product-gallery-thumblist-item {% if key == 0 %}  active {% endif %}" href="#{{i.id}}"><img src="/uploads/{{i.nom}}" alt="{{i.nom}}"></a>
+                 {% endfor %}
+                 </div>
+                </div>
+              </div>
+
+              
+              <!-- Product details-->
+              <div class="col-lg-5 pt-4 pt-lg-0">
+                <div class="product-details ms-auto pb-3">
+                  <div class="d-flex justify-content-between align-items-center mb-2"><a href="#reviews" data-scroll>
+
+                      <div class="star-rating">
+                     
+
+                         {% for i in 1..5 %}
+												  {% if i <= product.getAvgRating %} 
+												<li class="list-inline-item me-0"><i class="star-rating-icon ci-star-filled active"></i></li>
+												{% else %}											
+												<li class="list-inline-item me-0"><i class="star-rating-icon ci-star"></i></li>
+												{% endif %}
+                                 			 {% endfor %}
+                      </div><span class="d-inline-block fs-sm text-body align-middle mt-1 ms-1">{{product.comments | length}} Reviews</span></a>
+
+                      {% if app.user %}
+                  	{% for f in product.favorit %}
+													{% if f.id == app.user.id %}
+											 <a class="btn-wishlist me-0 me-lg-n3 btn-red" style="color:red" href="{{path('annule_fav',{'id':product.id})}}" data-bs-toggle="tooltip" data-bs-placement="left" title="Annule"><i class="ci-heart" style="color:red" ></i></a>
+											{% else %}
+												<a class="btn-wishlist me-0 me-lg-n3" href="{{ path('add_fav', {'id': product.id}) }}" data-bs-toggle="tooltip" data-bs-placement="left" title="Ajouter à la liste de souhaits"><i class="ci-heart" style="color:danger"></i></a>
+												{% endif %}
+                        
+												{% else %}
+												<a class="btn-wishlist me-0 me-lg-n3" href="{{ path('add_fav', {'id': product.id}) }}" data-bs-toggle="tooltip" data-bs-placement="left" title="Aajouter à la liste de souhaits"><i class="ci-heart" style="color:danger"></i></a>
+												
+                        {% endfor %}
+									 {% else %}
+									<button  class="btn-wishlist me-0 me-lg-n3 " href="{{path('add_fav',{'id':product.id})}}" data-bs-toggle="tooltip" data-bs-placement="left" title="Ajouter à la liste de souhaits" disabled="disabled"><i class="ci-heart"></i></button>
+									 {% endif %} 
+
+
+                   
+
+
+                  </div>
+
+                {% if product.remise %}
+                  <div class="mb-3"><span class="h3 fw-normal text-accent me-1">{{product.price}} DT</small></span>
+                    <del class="text-muted fs-lg me-3">{{product.remise}} DT</del><span class="badge bg-danger badge-shadow align-middle mt-n2">{{(((product.price) * 100) / product.remise) | number_format(0)}}%</span>
+                  </div>
+                  {% else %}
+
+                  <div class="mb-3"><span class="h3 fw-normal text-accent me-1">{{product.price}} DT</small></span>
+                   
+                  </div>
+                  
+                  {% endif %}
+
+                  <div class="position-relative me-n4 mb-3">
+                   
+                   {% if product.stock == 0 %}
+                    <div class="product-badge product-available mb-5" style="background-color:red"><i class="ci-security-check"></i>Produit indisponible</div><br><br>
+                   {% else %}
+                    <div class="product-badge product-available mb-5"><i class="ci-security-check"></i>Produit disponible</div><br><br>
+                    {% endif %}
+                  </div>
+                  <form class="mb-grid-gutter" method="post">
+                   
+                    <div class="mb-3 d-flex align-items-center">
+                    
+                      <a class="btn btn-primary btn-shadow d-block w-100" href="{{path('add_topanier',{'id':product.id})}}"><i class="ci-cart fs-lg me-2"></i>Ajouter dans le panier</a>
+                    </div>
+                  </form>
+                  <!-- Product panels-->
+                  <div class="accordion mb-4" id="productPanels">
+                    <div class="accordion-item">
+                      <h3 class="accordion-header"><a class="accordion-button" href="#productInfo" role="button" data-bs-toggle="collapse" aria-expanded="true" aria-controls="productInfo"><i class="ci-announcement text-muted fs-lg align-middle mt-n1 me-2"></i>Plus d'information sur le produit</a></h3>
+                      <div class="accordion-collapse collapse show" id="productInfo" data-bs-parent="#productPanels">
+                        <div class="accordion-body">
+                          <h6 class="fs-sm mb-2">Description</h6>
+                          <ul class="fs-sm ps-4">
+                            <li>Elastic rib: Cotton 95%, Elastane 5%</li>
+                            <li>Lining: Cotton 100%</li>
+                            <li>Cotton 80%, Polyester 20%</li>
+                          </ul>
+                         
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion-item">
+                      <h3 class="accordion-header"><a class="accordion-button collapsed" href="#shippingOptions" role="button" data-bs-toggle="collapse" aria-expanded="true" aria-controls="shippingOptions"><i class="ci-delivery text-muted lead align-middle mt-n1 me-2"></i>Livraison</a></h3>
+                      <div class="accordion-collapse collapse" id="shippingOptions" data-bs-parent="#productPanels">
+                        <div class="accordion-body fs-sm">
+                          <div class="d-flex justify-content-between border-bottom pb-2">
+                            <div>
+                              <div class="fw-semibold text-dark">Aramex</div>
+                              <div class="fs-sm text-muted">1 - 2 jours</div>
+                            </div>
+                            <div>8 DT</div>
+                          </div>
+                          <div class="d-flex justify-content-between border-bottom py-2">
+                            <div>
+                              <div class="fw-semibold text-dark">TPS</div>
+                              <div class="fs-sm text-muted">1 - 2 jours</div>
+                            </div>
+                            <div>8 DT</div>
+                          </div>
+
+                       
+                        </div>
+                      </div>
+                    </div>
+                   
+                  </div>
+                  <div class="text-center mb-4" >
+                 <img src="/uploads/{{product.marque.image}}" alt="">
+                 </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Product description section 1-->
+     
+        <!-- Product description section 2-->
+       
+      </div>
+      <!-- Reviews-->
+      <div class="border-top border-bottom my-lg-3 py-5">
+        <div class="container pt-md-2" id="reviews">
+          <div class="row pb-3">
+            <div class="col-lg-4 col-md-5">
+              <h2 class="h3 mb-4">{{product.comments | length}} Avis</h2>
+              <div class="star-rating me-2">
+             
+               {% for i in 1..5 %}
+												  {% if i <= product.getAvgRating %} 
+												<li class="list-inline-item me-0"><i class="ci-star-filled fs-sm text-accent me-1"></i></li>
+												{% else %}											
+												<li class="list-inline-item me-0"><i class="ci-star fs-sm text-muted me-1"></i></li>
+												{% endif %}
+                                 			 {% endfor %}
+              </div><span class="d-inline-block align-middle">{{product.getAvgRating | number_format(0)}} Note globale</span>
+             {% if total | length == 0 %}
+             {% set total = 5 %}
+             {% endif %}
+            </div>
+            <div class="col-lg-8 col-md-7">
+              <div class="d-flex align-items-center mb-2">
+                <div class="text-nowrap me-3"><span class="d-inline-block align-middle text-muted">5</span><i class="ci-star-filled fs-xs ms-1"></i></div>
+                <div class="w-100">
+                  <div class="progress" style="height: 4px;"> 
+                    <div class="progress-bar bg-success" role="progressbar" style="width: {{((five | length) * 100) / (total | length)}}%;" aria-valuenow="{{((five | length) * 100) / (total | length)}}" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                </div><span class="text-muted ms-3">{{five | length}}</span>
+              </div>
+              <div class="d-flex align-items-center mb-2">
+                <div class="text-nowrap me-3"><span class="d-inline-block align-middle text-muted">4</span><i class="ci-star-filled fs-xs ms-1"></i></div>
+                <div class="w-100">
+                  <div class="progress" style="height: 4px;">
+                    <div class="progress-bar" role="progressbar" style="width: {{((four | length) * 100) / (total | length)}}%; background-color: #a7e453;" aria-valuenow="{{((four | length) * 100) / (total | length)}}" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                </div><span class="text-muted ms-3">{{four | length}}</span>
+              </div>
+              <div class="d-flex align-items-center mb-2">
+                <div class="text-nowrap me-3"><span class="d-inline-block align-middle text-muted">3</span><i class="ci-star-filled fs-xs ms-1"></i></div>
+                <div class="w-100">
+                  <div class="progress" style="height: 4px;">
+                    <div class="progress-bar" role="progressbar" style="width: {{((three | length) * 100) / (total | length)}}%; background-color: #ffda75;" aria-valuenow="{{((three | length) * 100) / (total | length)}}" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                </div><span class="text-muted ms-3">{{three | length}}</span>
+              </div>
+              <div class="d-flex align-items-center mb-2">
+                <div class="text-nowrap me-3"><span class="d-inline-block align-middle text-muted">2</span><i class="ci-star-filled fs-xs ms-1"></i></div>
+                <div class="w-100">
+                  <div class="progress" style="height: 4px;">
+                    <div class="progress-bar" role="progressbar" style="width: {{((two | length) * 100) / (total | length)}}%; background-color: #fea569;" aria-valuenow="{{((two | length) * 100) / (total | length)}}" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                </div><span class="text-muted ms-3">{{two | length}}</span>
+              </div>
+              <div class="d-flex align-items-center">
+                <div class="text-nowrap me-3"><span class="d-inline-block align-middle text-muted">1</span><i class="ci-star-filled fs-xs ms-1"></i></div>
+                <div class="w-100">
+                  <div class="progress" style="height: 4px;">
+                    <div class="progress-bar bg-danger" role="progressbar" style="width: {{((one | length) * 100) / (total | length)}}%;" aria-valuenow="{{((two | length) * 100) / (total | length)}}" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                </div><span class="text-muted ms-3">{{one | length}}</span>
+              </div>
+            </div>
+          </div>
+          <hr class="mt-4 mb-3">
+          <div class="row pt-4">
+            <!-- Reviews list-->
+            <div class="col-md-7">
+              <div class="d-flex justify-content-end pb-4">
+                
+              </div>
+              <!-- Review-->
+
+          {% if product.comments | length > 0 %} 
+            {% for comment in product.comments |sort((b, a) => a.createdAt <=> b.createdAt) %}	        
+              <div class="product-review pb-4 mb-4 border-bottom">
+                <div class="d-flex mb-3">
+                  <div class="d-flex align-items-center me-4 pe-2"><img class="rounded-circle" src="/uploads/{{comment.user.photo}}" width="50" alt="Rafael Marquez">
+                    <div class="ps-3">
+                      <h6 class="fs-sm mb-0">{{comment.user.nom}} {{comment.user.prenom}}</h6><span class="fs-ms text-muted">{{comment.createdAt ? comment.createdAt|date('F j, Y, g:i a')}}</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="star-rating">
+                   
+                     {% for i in 1..5 %}
+												  {% if i <= product.getAvgRating %} 
+												<li class="list-inline-item me-0"><i class="star-rating-icon ci-star-filled active"></i></li>
+												{% else %}											
+												<li class="list-inline-item me-0"><i class="star-rating-icon ci-star"></i></li>
+												{% endif %}
+                                 			 {% endfor %}
+                    </div>
+                   
+                  </div>
+                </div>
+                <p class="fs-md mb-2">{{comment.content}}</p>
+               
+               
+              </div>
+              {% endfor %}
+               {% else %}
+		      <div class="alert alert-success mt-3">
+          <h3>Cet article n'a pas de commentaires.</h3></div>
+          {% endif %}
+            </div>
+            <!-- Leave review form-->
+            {% if app.user %}
+            <div class="col-md-5 mt-2 pt-4 mt-md-0 pt-md-0">
+              <div class="bg-secondary py-grid-gutter px-grid-gutter rounded-3">
+                <h3 class="h4 pb-2">Avis</h3>
+                <div class="needs-validation"  novalidate>
+                 
+                  <div class="mb-3">
+                    <label class="form-label" for="review-rating">Votre avis<span class="text-danger">*</span></label>
+                    	{{ form_start(form) }}
+                      {{form_widget(form.rating)}}
+                    <div class="invalid-feedback">Veuillez choisir la notation !</div>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label" for="review-text">Votre avis<span class="text-danger">*</span></label>
+                      {{form_widget(form.content)}}
+                    <div class="invalid-feedback">Veuillez choisir la notation !</div><small class="form-text text-muted">Votre avis doit comporter au moins 50 caractères.</small>
+                  </div>
+                 
+                  <button class="btn btn-primary btn-shadow d-block w-100" type="submit">Donnee un avis</button>
+                  	{{ form_end(form) }}
+                </div>
+              </div>
+            </div>
+            {% else %}
+               <div class="col-md-5 mt-2 pt-4 mt-md-0 pt-md-0">
+              <div class="bg-secondary py-grid-gutter px-grid-gutter rounded-3">
+                <h3 class="h4 pb-2">Avis</h3>
+                <div class="needs-validation"  novalidate>
+                 
+                  <div class="mb-3">
+                    <label class="form-label" for="review-rating">Votre avis<span class="text-danger">*</span></label>
+                    	{{ form_start(form) }}
+                      {{form_widget(form.rating)}}
+                    <div class="invalid-feedback">Veuillez choisir la notation !</div>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label" for="review-text">Votre avis<span class="text-danger">*</span></label>
+                      {{form_widget(form.content)}}
+                    <div class="invalid-feedback">Veuillez choisir la notation !</div><small class="form-text text-muted">Votre avis doit comporter au moins 50 caractères.</small>
+                  </div>
+                 
+                  <button class="btn btn-primary btn-shadow d-block w-100" type="submit" disabled="disabled">Connectez-vous pour commenter</button>
+                  	{{ form_end(form) }}
+                </div>
+              </div>
+            </div>
+{% endif %}
+
+          </div>
+        </div>
+      </div>
+    
+      <!-- Product carousel (You may also like)-->
+      <div class="container py-5 my-md-3">
+        <h2 class="h3 text-center pb-4">Tu pourrais aussi aimer</h2>
+        <div class="tns-carousel tns-controls-static tns-controls-outside">
+          <div class="tns-carousel-inner" data-carousel-options="{&quot;items&quot;: 2, &quot;controls&quot;: true, &quot;nav&quot;: false, &quot;responsive&quot;: {&quot;0&quot;:{&quot;items&quot;:1},&quot;500&quot;:{&quot;items&quot;:2, &quot;gutter&quot;: 18},&quot;768&quot;:{&quot;items&quot;:3, &quot;gutter&quot;: 20}, &quot;1100&quot;:{&quot;items&quot;:4, &quot;gutter&quot;: 30}}}">
+            <!-- Product-->
+
+            {% for p in best %}
+            <div>
+              <div class="card product-card card-static">
+                <button class="btn-wishlist btn-sm" type="button" data-bs-toggle="tooltip" data-bs-placement="left" title="Add to wishlist"><i class="ci-heart"></i></button>
+                <a class="card-img-top d-block overflow-hidden" href="{{path('show_pro',{'id':p.id})}}">
+               {% for i in p.images | slice(0,1) %}
+                <img src="/uploads/{{i.nom}}" alt="{{p.name}}">
+                {% endfor %}
+                </a>
+                <div class="card-body py-2"><a class="product-meta d-block fs-xs pb-1" href="#">{{p.category.nom}}</a>
+                  <h3 class="product-title fs-sm"><a href="{{path('show_pro',{'id':p.id})}}">{{p.name}}</a></h3>
+                  <div class="d-flex justify-content-between">
+                    <div class="product-price"><span class="text-accent">{{p.price}}.<small> DT</small></span></div>
+                    <div class="star-rating">
+
+
+                      {% for i in 1..5 %}
+												  {% if i <= p.getAvgRating %} 
+												<li class="list-inline-item me-0"><i class="star-rating-icon ci-star-filled active"></i></li>
+												{% else %}											
+												<li class="list-inline-item me-0"><i class="star-rating-icon ci-star"></i></li>
+												{% endif %}
+                                 			 {% endfor %}
+
+
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %} 
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+{% endblock %}

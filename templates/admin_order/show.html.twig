@@ -1,0 +1,249 @@
+{% extends 'baseadmin.html.twig' %}
+
+{% block title %}Hello AdminOrderController!{% endblock %}
+
+{% block body %}
+ 
+
+          <div class="page-content">
+            
+                <div class="container-fluid">
+                         
+                    <!-- start page title -->
+                    <div class="row">
+                     {% for label,messages in app.flashes %}
+                                    <div class="container mb-3 text-center">
+                                        <div class="alertt alert alert-{{ label }} rounded mb-3">
+                                            {% for message in messages %}
+                                                <p>{{ message }}</p>
+                                            {% endfor %}
+                                        </div>
+
+                                    </div>
+                                {% endfor %}
+                        <div class="col-12">
+                            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                                <h4 class="mb-sm-0">détails de la commande</h4>
+
+                                <div class="page-title-right">
+                                    <ol class="breadcrumb m-0">
+                                        <li class="breadcrumb-item"><a href="javascript: void(0);">Ecommerce</a></li>
+                                        <li class="breadcrumb-item active">détails de la commande</li>
+                                    </ol>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end page title -->
+
+                    <div class="row">
+                        <div class="col-xl-9">
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="d-flex align-items-center">
+                                        <h5 class="card-title flex-grow-1 mb-0">Commande ° {{order.reference}}</h5>
+                                        <div class="flex-shrink-0">
+                                            <a href="{{path('print_order',{'id':order.id})}}" class="btn btn-success btn-sm"><i class="ri-download-2-fill align-middle me-1"></i> Facture d'achat</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive table-card">
+                                        <table class="table table-nowrap align-middle table-borderless mb-0">
+                                            <thead class="table-light text-muted">
+                                                <tr>
+                                                    <th scope="col">Détails du produit</th>
+                                                    <th scope="col">Prix ​​de l'article</th>
+                                                    <th scope="col">Quantité</th>
+                                                    <th scope="col">Avis</th>
+                                                    <th scope="col" class="text-end">Montant total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for c in order.orderDetails %}
+                                                <tr>
+                                                    <td>
+                                                        <div class="d-flex">
+                                                            <div class="flex-shrink-0 avatar-md bg-light rounded p-1">
+                                                                {% for p in products %}
+                                                                {% if p.id == c.imageprod %}
+                                                                 {% for i in p.images  | slice(0,1) %}
+                                                                  <img src="/uploads/{{i.nom}}" alt="Product" class="img-fluid d-block">
+                                                              
+                                                                 {% endfor %}
+                                                                 {% endif %}
+                                                                {% endfor %}
+                                                            </div>
+                                                            <div class="flex-grow-1 ms-3">
+                                                                <h5 class="fs-15"><a href="apps-ecommerce-product-details.html" class="link-primary">{{c.product}}</a></h5>
+                                                                <p class="text-muted mb-0">Couleur: <span class="fw-medium">Rose</span></p>
+                                                                <p class="text-muted mb-0">Taille: <span class="fw-medium">M</span></p>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>{{c.price}} DT</td>
+                                                    <td>{{c.quantity}}</td>
+                                                    <td>
+                                                        <div class="text-warning fs-15">
+                                                            <i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-half-fill"></i>
+                                                        </div>
+                                                    </td>
+                                                    <td class="fw-medium text-end">
+                                                       {{c.total}} DT
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                             
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--end card-->
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="d-sm-flex align-items-center">
+                                        <h5 class="card-title flex-grow-1 mb-0">Etat de commande</h5>
+                                        <div class="flex-shrink-0 mt-2 mt-sm-0">
+                                            <a href="javasccript:void(0;)" class="btn btn-soft-info btn-sm mt-2 mt-sm-0"><i class="ri-map-pin-line align-middle me-1"></i> Changer l'address</a>
+                                            <a href="javasccript:void(0;)" class="btn btn-soft-danger btn-sm mt-2 mt-sm-0"><i class="mdi mdi-archive-remove-outline align-middle me-1"></i> Annule l'address</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                  {{form(form)}}
+                                </div>
+                            </div>
+                            <!--end card-->
+                        </div>
+                        <!--end col-->
+                        <div class="col-xl-3">
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="d-flex">
+                                        <h5 class="card-title flex-grow-1 mb-0"><i class="mdi mdi-truck-fast-outline align-middle me-1 text-muted"></i> Détails logistiques</h5>
+                                        <div class="flex-shrink-0">
+                                            <a href="javascript:void(0);" class="badge badge-soft-primary fs-11">Suivi de commande</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="text-center">
+                                        <lord-icon src="https://cdn.lordicon.com/uetqnvvg.json" trigger="loop" colors="primary:#405189,secondary:#0ab39c" style="width:80px;height:80px"></lord-icon>
+                                        <h5 class="fs-16 mt-2">{{order.nomtrasnport}}</h5>
+                                        <p class="text-muted mb-0">ID: {{order.reference}}</p>
+                                        <p class="text-muted mb-0">Mode de paiement : {{order.mode}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--end card-->
+
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="d-flex">
+                                        <h5 class="card-title flex-grow-1 mb-0">Détails du client</h5>
+                                        <div class="flex-shrink-0">
+                                            <a href="javascript:void(0);" class="link-secondary">Voir le profil</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-unstyled mb-0 vstack gap-3">
+                                        <li>
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-shrink-0">
+                                                    <img src="/uploads/{{order.user.photo}}" alt="" class="avatar-sm rounded">
+                                                </div>
+                                                <div class="flex-grow-1 ms-3">
+                                                    <h6 class="fs-14 mb-1">{{order.user.nom}} {{order.user.prenom}}</h6>
+                                                    <p class="text-muted mb-0">Client</p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li><i class="ri-mail-line me-2 align-middle text-muted fs-16"></i>{{order.user.email}}</li>
+                                        <li><i class="ri-phone-line me-2 align-middle text-muted fs-16"></i>{{order.user.phone}}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <!--end card-->
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0"><i class="ri-map-pin-line align-middle me-1 text-muted"></i> Adresse de facturation</h5>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-unstyled vstack gap-2 fs-13 mb-0">
+                                        <li class="fw-medium fs-14">{{order.user.nom}} {{order.user.prenom}}</li>
+                                        <li>{{order.user.phone}}</li>
+                                        <li>{{order.address}}</li>
+                                       
+                                    </ul>
+                                </div>
+                            </div>
+                            <!--end card-->
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0"><i class="ri-map-pin-line align-middle me-1 text-muted"></i> Adresse de livraison</h5>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-unstyled vstack gap-2 fs-13 mb-0">
+                                        <li class="fw-medium fs-14">{{order.nomtrasnport}}</li>
+                                        <li>{{(order.prixtransport) / 1000}} DT</li>
+                                        <li>{{order.address}}</li>
+                                       
+                                    </ul>
+                                </div>
+                            </div>
+                            <!--end card-->
+
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0"><i class="ri-secure-payment-line align-bottom me-1 text-muted"></i> Détails de paiement</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="flex-shrink-0">
+                                            <p class="text-muted mb-0">Transactions:</p>
+                                        </div>
+                                        <div class="flex-grow-1 ms-2">
+                                            <h6 class="mb-0">{{order.stripeid}}</h6>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="flex-shrink-0">
+                                            <p class="text-muted mb-0">Mode de paiement:</p>
+                                        </div>
+                                        <div class="flex-grow-1 ms-2">
+                                            <h6 class="mb-0">{{order.mode}}</h6>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="flex-shrink-0">
+                                            <p class="text-muted mb-0">Nom du titulaire:</p>
+                                        </div>
+                                        <div class="flex-grow-1 ms-2">
+                                            <h6 class="mb-0">{{order.user.nom}} {{order.user.prenom}}</h6>
+                                        </div>
+                                    </div>
+                                  
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-shrink-0">
+                                            <p class="text-muted mb-0">Montant total:</p>
+                                        </div>
+                                        <div class="flex-grow-1 ms-2">
+                                            <h6 class="mb-0">{{order.total}} DT</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--end card-->
+                        </div>
+                        <!--end col-->
+                    </div>
+                    <!--end row-->
+
+                </div><!-- container-fluid -->
+            </div><!-- End Page-content -->
+
+ 
+{% endblock %}

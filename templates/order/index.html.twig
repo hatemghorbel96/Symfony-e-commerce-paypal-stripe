@@ -1,0 +1,141 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}complete ur order infro!{% endblock %}
+
+{% block body %}
+ <div class="page-title-overlap bg-dark pt-4">
+        <div class="container d-lg-flex justify-content-between py-2 py-lg-3">
+          <div class="order-lg-2 mb-3 mb-lg-0 pt-lg-2">
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb breadcrumb-light flex-lg-nowrap justify-content-center justify-content-lg-start">
+                <li class="breadcrumb-item"><a class="text-nowrap" href="index.html"><i class="ci-home"></i>Home</a></li>
+                <li class="breadcrumb-item text-nowrap"><a href="shop-grid-ls.html">Shop</a>
+                </li>
+                <li class="breadcrumb-item text-nowrap active" aria-current="page">Checkout</li>
+              </ol>
+            </nav>
+          </div>
+          <div class="order-lg-1 pe-lg-4 text-center text-lg-start">
+            <h1 class="h3 text-light mb-0">Checkout</h1>
+          </div>
+        </div>
+      </div>
+      <div class="container pb-5 mb-2 mb-md-4">
+        <div class="row">
+          <section class="col-lg-8">
+            <!-- Steps-->
+            <div class="steps steps-light pt-2 pb-3 mb-5"><a class="step-item active" href="shop-cart.html">
+                <div class="step-progress"><span class="step-count">1</span></div>
+                <div class="step-label"><i class="ci-cart"></i>Panier</div></a><a class="step-item active" href="checkout-details.html">
+                <div class="step-progress"><span class="step-count">2</span></div>
+                 <div class="step-label"><i class="ci-package"></i>Livraison</div></a><a class="step-item " href="checkout-payment.html">          
+                <div class="step-progress"><span class="step-count">3</span></div>
+                <div class="step-label"><i class="ci-check-circle"></i>Review</div></a><a class="step-item " href="checkout-shipping.html">
+                <div class="step-progress"><span class="step-count">4</span></div>
+                <div class="step-label"><i class="ci-card"></i>Paiement</div></a><a class="step-item" href="checkout-review.html">
+               
+                
+                </a>
+                </div>
+            <!-- Shipping methods table-->
+            <h2 class="h6 pb-3 mb-2">Sélectionnez votre transporteur</h2>
+           
+             
+                
+                   {% set formHtml %}
+                  
+                 
+                  {{form_start(form, {action:path('valid_order')}) }} 
+                   
+                   
+                   
+                     
+                  
+              
+                    <div class="d-sm-flex justify-content-between align-items-center bg-secondary p-4 rounded-3 mb-grid-gutter">
+              <div class="d-flex align-items-center">
+                <div class="img-thumbnail rounded-circle position-relative flex-shrink-0"><span class="badge bg-warning position-absolute end-0 mt-n2" data-bs-toggle="tooltip" title="Reward points">384</span><img class="rounded-circle" src="/uploads/{{app.user.photo}}" width="90" alt="Susan Gardner"></div>
+                <div class="ps-3">
+                  <h3 class="fs-base mb-0">{{app.user.nom}}{{app.user.prenom}}</h3><span class="text-accent fs-sm">{{app.user.email}}</span>
+                </div>
+              </div><a class="btn btn-light btn-sm btn-shadow mt-3 mt-sm-0" href="account-profile.html"><i class="ci-edit me-2"></i>Edit profile</a>
+            </div>
+            <!-- Shipping address-->
+           
+                  {{form_start(form.address)}}
+            
+                  {{form_start(form.phone)}}
+                 <div class="text-center">
+                    {{form_row(form.transporteurs)}}
+                   
+                    </div>
+                 
+           
+                  
+               
+                    
+              
+                       
+                      
+                   {{form_end(form)}}
+                   {% endset %}
+                     {{formHtml | replace ({'[br]' : '<br/>'})| raw }}
+                   
+                   
+                
+                   {#  <td>
+                      <div class="form-check mb-4">
+                        <input class="form-check-input" type="radio" id="courier" name="shipping-method" checked>
+                        <label class="form-check-label" for="courier"></label>
+                      </div>
+                    </td>
+                    <td class="align-middle"><span class="text-dark fw-medium">Courier</span><br><span class="text-muted">All addresses (default zone), United States &amp; Canada</span></td>
+                    <td class="align-middle">2 - 4 days</td>
+                    <td class="align-middle">$26.50</td> #}
+                  
+            
+            <!-- Navigation (desktop)-->
+          
+          </section>
+          <!-- Sidebar-->
+          <aside class="col-lg-4 pt-4 pt-lg-0 ps-xl-5">
+            <div class="bg-white rounded-3 shadow-lg p-4 ms-lg-auto">
+              <div class="py-2 px-xl-2">
+                <div class="widget mb-3">
+                  <h2 class="widget-title text-center">Order summary</h2>
+                    {% set total = 0 %}
+                  {% for p in panier %}
+                  <div class="d-flex align-items-center pb-2 border-bottom"><a class="d-block flex-shrink-0" href="shop-single-v1.html">
+                  
+                        {% for i in p.product.images |slice(0,1) %}
+                    <img src="/uploads/{{i.nom}}" width="64" alt="Product"></a>
+                    {% endfor %}
+                  
+                  </a>
+                    <div class="ps-2">
+                      <h6 class="widget-product-title"><a href="shop-single-v1.html">{{p.product.name}}</a></h6>
+                      <div class="widget-product-meta"><span class="text-accent me-2">{{p.product.price}} DT</span><span class="text-muted">x {{p.quantity}}</span></div>
+                    </div>
+                  </div>
+                   {% set total = total +(p.product.price * p.quantity) %}
+                {% endfor %}
+                </div>
+                <ul class="list-unstyled fs-sm pb-2 border-bottom">
+                  <li class="d-flex justify-content-between align-items-center"><span class="me-2">Subtotal:</span><span class="text-end">{{total}} DT</small></span></li>
+                  <li class="d-flex justify-content-between align-items-center"><span class="me-2">Livraison:</span><span class="text-end">—</span></li>
+                 
+                 
+                </ul>
+                <h3 class="fw-normal text-center my-4"> <div class="badge rounded-pill bg-warning text-dark"> {{total}} DT</div></h3>
+               
+              </div>
+            </div>
+          </aside>
+        </div>
+        <!-- Navigation (mobile)-->
+        <div class="row d-lg-none">
+         
+        </div>
+      </div>
+    </main>
+{% endblock %}

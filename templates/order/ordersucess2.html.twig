@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}My order - Paied!{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+<h2>Valid Order</h2>
+<p>
+          {#   hello <strong>{{order.user.firstname}} {{order.user.lastname}}</strong> <br><br>
+            Thank you for ur order n°<strong>{{order.reference}}</strong><br>
+            we send a confirm email to ur address <strong>{{order.user.email}}</strong>
+            <hr>
+            Ur order will delivred by <strong>{{order.carrierName}}</strong> into address : <br> {{order.delivery | raw}}
+            <hr>
+            To view your order select your account <a href="{{path('my_order')}}">Account</a> #}
+            test success 2
+</p></div>
+{% endblock %}

@@ -1,0 +1,13 @@
+                
+                {% for c in categories %}
+                <div class="mega-dropdown-column pt-3 pt-sm-4 px-2 px-lg-3">
+                          <div class="widget widget-links"><a class="d-block overflow-hidden rounded-3 mb-3" href="{{path('category_prod',{'id':c.id})}}">
+                          <img src="/uploads/{{c.img}}" alt="Clothing" style="width:350px; height:110px;"></a>
+                            <h6 class="fs-base mb-2 text-center">{{c.nom}}</h6>
+                            <ul class="widget-list">
+                             
+                            </ul>
+                          </div>
+                        </div>
+
+                        {% endfor %}

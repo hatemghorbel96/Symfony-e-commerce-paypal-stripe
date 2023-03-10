@@ -1,0 +1,195 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}HG-SHOP | boutique!{% endblock %}
+
+{% block body %}
+
+
+  <div class="page-title-overlap bg-dark pt-4">
+        <div class="container d-lg-flex justify-content-between py-2 py-lg-3">
+          <div class="order-lg-2 mb-3 mb-lg-0 pt-lg-2">
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb breadcrumb-light flex-lg-nowrap justify-content-center justify-content-lg-start">
+                <li class="breadcrumb-item"><a class="text-nowrap" href="index.html"><i class="ci-home"></i>Acceuil</a></li>
+                <li class="breadcrumb-item text-nowrap"><a href="#">Boutique</a>
+                </li>
+                <li class="breadcrumb-item text-nowrap active" aria-current="page">Liste</li>
+              </ol>
+            </nav>
+          </div>
+          <div class="order-lg-1 pe-lg-4 text-center text-lg-start">
+            <h1 class="h3 text-light mb-0">Liste de produits</h1>
+          </div>
+        </div>
+      </div>
+      <div class="container pb-5 mb-2 mb-md-4">
+        <div class="row">
+          <!-- Content  -->
+          <section class="col-lg-8">
+            <!-- Toolbar-->
+          
+            <!-- Products grid-->
+            <div class="row mx-n2">
+              <!-- Product-->
+              {% for p in products %}
+              <div class="col-md-4 col-sm-6 px-2 mb-4">
+                <div class="card product-card">
+                  {% if app.user %}
+                  	{% for f in p.favorit %}
+													{% if f.id == app.user.id %}
+											 <a class="btn-wishlist btn-sm btn-red" style="color:red" href="{{path('down_fav',{'id':p.id})}}" data-bs-toggle="tooltip" data-bs-placement="left" title="Annule"><i class="ci-heart" style="color:red" ></i></a>
+											{% else %}
+												<a class="btn-wishlist btn-sm" href="{{ path('up_fav', {'id': p.id}) }}" data-bs-toggle="tooltip" data-bs-placement="left" title="Ajouter à la liste de souhaits"><i class="ci-heart" style="color:danger"></i></a>
+												{% endif %}
+												{% else %}
+												<a class="btn-wishlist btn-sm" href="{{ path('up_fav', {'id': p.id}) }}" data-bs-toggle="tooltip" data-bs-placement="left" title="Ajouter à la liste de souhaits"><i class="ci-heart" style="color:danger"></i></a>
+												{% endfor %}
+									 {% else %}
+									<button  class="btn-wishlist btn-sm " href="{{path('up_fav',{'id':p.id})}}" data-bs-toggle="tooltip" data-bs-placement="left" title="Ajouter à la liste de souhaits" disabled="disabled"><i class="ci-heart"></i></button>
+									 {% endif %} 
+                 
+                  
+                  
+                  <a class="card-img-top d-block overflow-hidden" href="{{path('show_pro',{'id':p.id})}}">
+                  {% for i in p.images | slice(0,1) %}
+                  <img src="/uploads/{{i.nom}}" alt="Product"></a>
+                  {% endfor %}
+                  <div class="card-body py-2"><a class="product-meta d-block fs-xs pb-1" href="#">{{p.category.nom}}</a>
+                    <h3 class="product-title fs-sm"><a href="{{path('show_pro',{'id':p.id})}}">{{p.name}}</a></h3>
+                    <div class="d-flex justify-content-between">
+
+                      {% if p.remise > 0 %}
+                      <div class="product-price"><span class="text-accent">{{p.price}} DT</small></span>
+                      <del class="text-muted fs-lg me-3">{{p.remise}} DT</del>
+                      </div>
+                       
+                      {% else %}
+                      <div class="product-price"><span class="text-accent">{{p.price}} DT</small></span></div>
+
+                     {% endif %}
+
+                      <div class="star-rating">
+                     {% for i in 1..5 %}
+												  {% if i <= p.getAvgRating %} 
+												<li class="list-inline-item me-0"><i class="star-rating-icon ci-star-filled active"></i></li>
+												{% else %}											
+												<li class="list-inline-item me-0"><i class="star-rating-icon ci-star"></i></li>
+												{% endif %}
+                                 			 {% endfor %}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-body card-body-hidden">
+                   
+                    <a class="btn btn-primary btn-sm d-block w-100 mb-2" href="{{path('add_topanier',{'id':p.id})}}"><i class="ci-cart fs-sm me-1"></i>Ajouter dans le panier</a>
+                    <div class="text-center"><a class="nav-link-style fs-ms" href="#quick-view" data-bs-toggle="modal"><i class="ci-eye align-middle me-1"></i>Details</a></div>
+                  </div>
+                </div>
+                <hr class="d-sm-none">
+              </div>
+              {% endfor %}
+            </div>
+            <!-- Banner-->
+       
+           
+            <hr class="my-3">
+            <!-- Pagination-->
+            <nav class="d-flex justify-content-between pt-2" aria-label="Page navigation">
+              <ul class="pagination">
+                <li class="page-item {% if page == 1 %}disabled{% endif %}"><a class="page-link" href="{{path('products', {'page': page -1}) }}"><i class="ci-arrow-left me-2"></i>Précé</a></li>
+              </ul>
+              <ul class="pagination">
+             {#    <li class="page-item d-sm-none"><span class="page-link page-link-static">1 / 5</span></li>
+                <li class="page-item active d-none d-sm-block" aria-current="page"><span class="page-link">1<span class="visually-hidden">(current)</span></span></li>
+                <li class="page-item d-none d-sm-block"><a class="page-link" href="#">2</a></li>
+                <li class="page-item d-none d-sm-block"><a class="page-link" href="#">3</a></li>
+                <li class="page-item d-none d-sm-block"><a class="page-link" href="#">4</a></li>
+                <li class="page-item d-none d-sm-block"><a class="page-link" href="#">5</a></li> #}
+
+                  {% for i in 1..pages %}
+            <li class="page-item {% if page == i %}active {% endif %} d-none d-sm-block"  aria-current="page">
+              <a class="page-link " href="{{path('products',{'page':i})}}">{{i}}</a>
+            </li>
+            {% endfor %}
+
+            
+              </ul>
+              <ul class="pagination">
+                <li class="page-item {% if page == pages %}disabled{% endif %}" ><a class="page-link"  
+                href="{{path('products', {'page': page +1}) }}" aria-label="Next">Prochain<i class="ci-arrow-right ms-2"></i></a></li>
+              </ul>
+            </nav>
+          </section>
+          <!-- Sidebar-->
+          <aside class="col-lg-4">
+            <!-- Sidebar-->
+            <div class="offcanvas offcanvas-collapse offcanvas-end bg-white w-100 rounded-3 shadow-lg ms-lg-auto py-1" id="shop-sidebar" style="max-width: 22rem;">
+              <div class="offcanvas-header align-items-center shadow-sm">
+                <h2 class="h5 mb-0">Filters</h2>
+                <button class="btn-close ms-auto" type="button" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+              </div>
+              <div class="offcanvas-body py-grid-gutter px-lg-grid-gutter">
+                <!-- Categories-->
+                <div class="widget widget-categories mb-4 pb-4 border-bottom">
+                  <h3 class="widget-title">Categories</h3>
+                  <div class="accordion mt-n1" id="shop-categories">  
+                   
+                  {% for c in categories %}
+                      <h3 class="accordion-header"><a class="accordion-button collapsed" href="#{{c.nom}}" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="shoes">{{c.nom}}</a></h3>
+                      <div class="accordion-collapse collapse" id="{{c.nom}}" data-bs-parent="#shop-categories">
+                       <div class="accordion-body">
+                          <div class="widget widget-links widget-filter">
+                            <div class="input-group input-group-sm mb-2">
+                              <input class="widget-filter-search form-control rounded-end" type="text" placeholder="Search"><i class="ci-search position-absolute top-50 end-0 translate-middle-y fs-sm me-3"></i>
+                            </div>
+                            
+                            <ul class="widget-list widget-filter-list pt-1" style="height: 12rem;" data-simplebar data-simplebar-auto-hide="false">
+                                {% for p in c.products %}
+                               
+                              <li class="widget-list-item widget-filter-item">
+                              
+                              <a class="widget-list-link d-flex justify-content-between align-items-center" href="{{path('show_pro',{'id':p.id})}}">
+                               {% for i in p.images | slice(0,1)  %}
+                                <img src="/uploads/{{i.nom}}" alt="" style="width:50px; height:50px;">
+                                {% endfor %}
+                              <span class="widget-filter-item-text">{{p.name}}</span><span class="fs-xs text-muted ms-3">{{p.price}} DT</span></a></li>
+                                {% endfor %}
+                            </ul>
+                        
+                      </div> </div> </div>
+                  
+              {% endfor %}    
+                  </div>
+                </div>
+             
+                <!-- Filter by Brand-->
+                <div class="widget widget-filter mb-4 pb-4 border-bottom">
+                  <h3 class="widget-title">Marque</h3>
+                  <div class="input-group input-group-sm mb-2">
+                    <input class="widget-filter-search form-control rounded-end pe-5" type="text" placeholder="Rechercher"><i class="ci-search position-absolute top-50 end-0 translate-middle-y fs-sm me-3"></i>
+                  </div>
+                  <ul class="widget-list widget-filter-list list-unstyled pt-1" style="max-height: 11rem;" data-simplebar data-simplebar-auto-hide="false">
+                   
+                   
+                   {% for m in marques %}
+                    <li class="widget-filter-item d-flex justify-content-between align-items-center mb-1">
+                      <div class="form-check">
+                        <a href="{{path('marque_prod',{'id':m.id})}}">
+                        <label class="form-check-label widget-filter-item-text" for="adidas">{{m.nom}}</label></a>
+                      </div><span class="fs-xs text-muted">{{m.products | length}}</span>
+                    </li>
+                   {% endfor %}
+                  
+                  </ul>
+                </div>
+            
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </main>
+  <!-- jQuery is necessary -->
+
+     
+{% endblock %}
